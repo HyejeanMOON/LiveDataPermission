@@ -1,7 +1,6 @@
 package com.hyejeanmoon.livedatapermission
 
 import android.content.pm.PackageManager
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
@@ -26,6 +25,7 @@ class InvisibleFragment : Fragment() {
     private fun requestPermission() {
         builder.grantedPermissionList.clear()
         builder.deniedPermissionList.clear()
+        val requestList: ArrayList<String> = arrayListOf()
         permissionList.forEachIndexed { index, permission ->
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -35,19 +35,12 @@ class InvisibleFragment : Fragment() {
                 builder.grantedPermissionList.add(permission)
                 builder.deniedPermissionList.remove(permission)
             } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        requireActivity(),
-                        permission
-                    )
-                ) {
-                    callback.showExplanation()
-                } else {
-                    requestPermissions(
-                        arrayOf(permission),
-                        PERMISSION_REQUEST_CODE
-                    )
-                }
+                requestList.add(permission)
             }
+        }
+
+        if (requestList.isNotEmpty()) {
+            requestPermissions(requestList.toTypedArray(), PERMISSION_REQUEST_CODE)
         }
 
         if (permissionList.size == builder.grantedPermissionList.size) {
@@ -62,19 +55,20 @@ class InvisibleFragment : Fragment() {
     ) {
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
+            val numberOfPermission = builder.grantedPermissionList.size
             grantResults.forEachIndexed { index, permission ->
                 if (permission == PackageManager.PERMISSION_GRANTED) {
                     builder.grantedPermissionList.add(permissions[index])
                     builder.deniedPermissionList.remove(permissions[index])
 
                 } else {
-                    builder.deniedPermissionList.add(permissionList[index])
+                    builder.deniedPermissionList.add(permissions[index])
                     builder.grantedPermissionList.remove(permissions[index])
                 }
             }
             callback.getPermission()
-            
-            if (permissions.size == builder.grantedPermissionList.size) {
+
+            if (permissions.size + numberOfPermission == builder.grantedPermissionList.size) {
                 callback.setAllGrantedFlag(true)
             } else {
                 callback.setAllGrantedFlag(false)
