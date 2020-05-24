@@ -38,11 +38,17 @@ class LiveDataPermissionBuilder internal constructor(
                 if (isNeedForExplanationMessage) {
                     permissionResult.setShowExplanationMessageEvent(event = Event(Unit))
                 }
+            }
 
+            override fun getPermission() {
+                permissionResult.setGrantedPermissionList(Event(grantedPermissionList.toList()))
+                permissionResult.setDeniedPermissionList(Event(deniedPermissionList.toList()))
+            }
+
+            override fun setAllGrantedFlag(flag: Boolean) {
+                permissionResult.setAllGranted(Event(flag))
             }
         })
-        permissionResult.setGrantedPermissionList(Event(grantedPermissionList.toList()))
-        permissionResult.setDeniedPermissionList(Event(deniedPermissionList.toList()))
 
     }
 

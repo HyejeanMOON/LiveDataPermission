@@ -14,16 +14,22 @@ class PermissionResult {
     private val _showExplanationMessageEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
     val showExplanationMessageEvent: LiveData<Event<Unit>> get() = _showExplanationMessageEvent
 
+    private val _allGranted: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val allGranted: LiveData<Event<Boolean>> get() = _allGranted
+
     fun setGrantedPermissionList(list: Event<List<String>>) {
-        _grantedPermissionList.value = list
+        _grantedPermissionList.postValue(list)
     }
 
     fun setDeniedPermissionList(list: Event<List<String>>) {
-        _deniedPermissionList.value = list
+        _deniedPermissionList.postValue(list)
     }
 
     fun setShowExplanationMessageEvent(event: Event<Unit>) {
-        _showExplanationMessageEvent.value = event
+        _showExplanationMessageEvent.postValue(event)
     }
 
+    fun setAllGranted(flag: Event<Boolean>) {
+        _allGranted.postValue(flag)
+    }
 }

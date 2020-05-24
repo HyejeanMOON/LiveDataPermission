@@ -24,6 +24,8 @@ class InvisibleFragment : Fragment() {
     }
 
     private fun requestPermission() {
+        builder.grantedPermissionList.clear()
+        builder.deniedPermissionList.clear()
         permissionList.forEachIndexed { index, permission ->
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -31,6 +33,7 @@ class InvisibleFragment : Fragment() {
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 builder.grantedPermissionList.add(permission)
+                builder.deniedPermissionList.remove(permission)
             } else {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
                         requireActivity(),
@@ -39,32 +42,44 @@ class InvisibleFragment : Fragment() {
                 ) {
                     callback.showExplanation()
                 } else {
-                    ActivityCompat.requestPermissions(
-                        requireActivity(), arrayOf(permission),
+                    requestPermissions(
+                        arrayOf(permission),
                         PERMISSION_REQUEST_CODE
                     )
                 }
             }
         }
 
+        if (permissionList.size == builder.grantedPermissionList.size) {
+            callback.setAllGrantedFlag(true)
+        }
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+
         if (requestCode == PERMISSION_REQUEST_CODE) {
             grantResults.forEachIndexed { index, permission ->
                 if (permission == PackageManager.PERMISSION_GRANTED) {
-                    builder.grantedPermissionList.add(permissionList[index])
+                    builder.grantedPermissionList.add(permissions[index])
+                    builder.deniedPermissionList.remove(permissions[index])
+
                 } else {
                     builder.deniedPermissionList.add(permissionList[index])
+                    builder.grantedPermissionList.remove(permissions[index])
                 }
             }
+            callback.getPermission()
+            
+            if (permissions.size == builder.grantedPermissionList.size) {
+                callback.setAllGrantedFlag(true)
+            } else {
+                callback.setAllGrantedFlag(false)
+            }
         }
-
     }
 
     companion object {
