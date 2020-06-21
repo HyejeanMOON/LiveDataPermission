@@ -54,7 +54,7 @@ There is a library that easily request application permissions in Android , and 
 ## Others
 
 ### About EventObserver
-We should use [EventObserver] when observe a result from library. Because [Observer] should receive every time when onResume is called. So, I wraped [Observer] and it is called [EventObserver], it receive result just one time.
+We should use [EventObserver] when observe a result from library. Because [Observer] should receive every time when onResume is called. So, I wraped [Observer] and called [EventObserver], it receive result just one time.
 
 ### Problems
 The function of show explanation dialog is not good. I'll optimize later.
